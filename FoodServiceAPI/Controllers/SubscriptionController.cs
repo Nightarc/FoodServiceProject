@@ -1,83 +1,61 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FoodServiceAPI.DataModels;
+using LinqToDB;
 using Microsoft.AspNetCore.Mvc;
+using static LinqToDB.Reflection.Methods.LinqToDB;
+
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace FoodServiceAPI.Controllers
 {
-    public class SubscriptionController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class SubscriptionController(PostgresDB connection) : ControllerBase
     {
-        // GET: SubscriptionController
-        public ActionResult Index()
+        private readonly PostgresDB _connection = connection;
+
+        // GET: api/<SubscriptionController>
+        [HttpGet]
+        public IEnumerable<Subscription> Get()
         {
-            return View();
+            return _connection.Subscriptions.ToList();
         }
 
-        // GET: SubscriptionController/Details/5
-        public ActionResult Details(int id)
+        // GET api/<SubscriptionController>/5
+        [HttpGet("{id}")]
+        public Subscription Get(int id)
         {
-            return View();
+            return _connection.Subscriptions.Find(id);
         }
 
-        // GET: SubscriptionController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: SubscriptionController/Create
+        // POST api/<SubscriptionController>
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public Subscription Post([FromBody] Subscription Subscription)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            var SubscriptionID = _connection.InsertWithIdentity(Subscription);
+
+            return _connection.Subscriptions.Find(Convert.ToInt32(SubscriptionID));
         }
 
-        // GET: SubscriptionController/Edit/5
-        public ActionResult Edit(int id)
+        // PUT api/<SubscriptionController>/5
+        [HttpPut("{id}")]
+        public Subscription Put(int id, [FromBody] Subscription Subscription)
         {
-            return View();
+            //.connection.Subscriptions.InsertOrUpdate()
+            _connection.Subscriptions.Where(c => c.SubscriptionID == id)
+                .Set(t => t.DateStart, Subscription.DateStart)
+                .Set(t => t.DateEnd, Subscription.DateEnd)
+                .Set(t => t.CustomerID, Subscription.CustomerID)
+                .Set(t => t.PaymentID, Subscription.PaymentID)
+                .Set(t => t.SubscriptionType, Subscription.SubscriptionType)
+                .Update();
+            return _connection.Subscriptions.Find(Convert.ToInt32(id));
         }
 
-        // POST: SubscriptionController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        // DELETE api/<SubscriptionController>/5
+        [HttpDelete("{id}")]
+        public void Delete(int id)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: SubscriptionController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: SubscriptionController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            _connection.Subscriptions.Where(c => c.SubscriptionID == id).Delete();
         }
     }
 }

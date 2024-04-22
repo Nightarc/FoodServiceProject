@@ -361,7 +361,13 @@ namespace FoodServiceAPI.DataModels
 				t.OrderID == OrderID);
 		}
 
-		public static Payment Find(this ITable<Payment> table, int PaymentID)
+        public static OrderDetail Find(this ITable<OrderDetail> table, int OrderID, int FoodItemID)
+        {
+            return table.FirstOrDefault(t =>
+                (t.OrderID == OrderID && t.FoodItem == FoodItemID));
+        }
+
+        public static Payment Find(this ITable<Payment> table, int PaymentID)
 		{
 			return table.FirstOrDefault(t =>
 				t.PaymentID == PaymentID);
@@ -372,8 +378,13 @@ namespace FoodServiceAPI.DataModels
 			return table.FirstOrDefault(t =>
 				t.PromotionID == PromotionID);
 		}
+        public static PromotionList Find(this ITable<PromotionList> table, int CustomerID, int PromotionID)
+        {
+            return table.FirstOrDefault(t =>
+                (t.CustomerID == CustomerID && t.PromotionID == PromotionID));
+        }
 
-		public static Subscription Find(this ITable<Subscription> table, int SubscriptionID)
+        public static Subscription Find(this ITable<Subscription> table, int SubscriptionID)
 		{
 			return table.FirstOrDefault(t =>
 				t.SubscriptionID == SubscriptionID);

@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FoodServiceAPI.DataModels;
+using LinqToDB;
+using Microsoft.AspNetCore.Mvc;
+using static LinqToDB.Reflection.Methods.LinqToDB;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -6,38 +9,52 @@ namespace FoodServiceAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ValuesController : ControllerBase
+    public class PaymentController(PostgresDB connection) : ControllerBase
     {
-        // GET: api/<ValuesController>
+        private readonly PostgresDB _connection = connection;
+
+        // GET: api/<PaymentController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IEnumerable<Payment> Get()
         {
-            return new string[] { "value1", "value2" };
+            return _connection.Payments.ToList();
         }
 
-        // GET api/<ValuesController>/5
+        // GET api/<PaymentController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public Payment Get(int id)
         {
-            return "value";
+            return _connection.Payments.Find(id);
         }
 
-        // POST api/<ValuesController>
+        // POST api/<PaymentController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public Payment Post([FromBody] Payment Payment)
         {
+            var PaymentID = _connection.InsertWithIdentity(Payment);
+
+            return _connection.Payments.Find(Convert.ToInt32(PaymentID));
         }
 
-        // PUT api/<ValuesController>/5
+        // PUT api/<PaymentController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public Payment Put(int id, [FromBody] Payment Payment)
         {
+            //.connection.Payments.InsertOrUpdate()
+            _connection.Payments.Where(c => c.PaymentID == id)
+                .Set(t => t.NetPrice, Payment.NetPrice)
+                .Set(t => t.PaymentAmount, Payment.PaymentAmount)
+                .Set(t => t.Time, Payment.Time)
+                .Set(t => t.Date, Payment.Date)
+                .Update();
+            return _connection.Payments.Find(Convert.ToInt32(id));
         }
 
-        // DELETE api/<ValuesController>/5
+        // DELETE api/<PaymentController>/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+            _connection.Payments.Where(c => c.PaymentID == id).Delete();
         }
     }
 }

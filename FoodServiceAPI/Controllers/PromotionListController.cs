@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FoodServiceAPI.DataModels;
+using LinqToDB;
+using Microsoft.AspNetCore.Mvc;
+using static LinqToDB.Reflection.Methods.LinqToDB;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -6,38 +9,51 @@ namespace FoodServiceAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ValuesController : ControllerBase
+    public class PromotionListController(PostgresDB connection) : ControllerBase
     {
-        // GET: api/<ValuesController>
+        private readonly PostgresDB _connection = connection;
+
+        // GET: api/<PromotionListController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IEnumerable<PromotionList> Get()
         {
-            return new string[] { "value1", "value2" };
+            return _connection.PromotionLists.ToList();
         }
 
-        // GET api/<ValuesController>/5
+        // GET api/<PromotionListController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public PromotionList Get(int CustomerID, int PromotionID)
         {
-            return "value";
+            return _connection.PromotionLists.Find(CustomerID, PromotionID);
         }
 
-        // POST api/<ValuesController>
+        // POST api/<PromotionListController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public PromotionList Post([FromBody] PromotionList PromotionList)
         {
+            _connection.Insert(PromotionList);
+
+            return _connection.PromotionLists.Find(PromotionList.CustomerID.Value, PromotionList.PromotionID.Value);
         }
 
-        // PUT api/<ValuesController>/5
+        // PUT api/<PromotionListController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public PromotionList Put(int CustomerID, int PromotionID, [FromBody] PromotionList PromotionList)
         {
+            //.connection.PromotionLists.InsertOrUpdate()
+            _connection.PromotionLists.Where(c => (c.CustomerID == CustomerID && c.PromotionID == PromotionID))
+                .Set(t => t.CustomerID, PromotionList.CustomerID)
+                .Set(t => t.PromotionID, PromotionList.PromotionID)
+                .Update();
+            return _connection.PromotionLists.Find(Convert.ToInt32(CustomerID), (Convert.ToInt32(PromotionID)));
         }
 
-        // DELETE api/<ValuesController>/5
+        // DELETE api/<PromotionListController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public void Delete(int CustomerID, int PromotionID)
         {
+            _connection.PromotionLists.Where(t =>
+                (t.CustomerID == CustomerID && t.PromotionID == PromotionID)).Delete();
         }
     }
 }

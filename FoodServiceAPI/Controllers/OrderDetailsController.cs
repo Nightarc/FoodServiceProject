@@ -1,83 +1,60 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FoodServiceAPI.DataModels;
+using LinqToDB;
 using Microsoft.AspNetCore.Mvc;
+using static LinqToDB.Reflection.Methods.LinqToDB;
+
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace FoodServiceAPI.Controllers
 {
-    public class OrderDetailsController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class OrderDetailController(PostgresDB connection) : ControllerBase
     {
-        // GET: OrderDetails
-        public ActionResult Index()
+        private readonly PostgresDB _connection = connection;
+
+        // GET: api/<OrderDetailController>
+        [HttpGet]
+        public IEnumerable<OrderDetail> Get()
         {
-            return View();
+            return _connection.OrderDetails.ToList();
         }
 
-        // GET: OrderDetails/Details/5
-        public ActionResult Details(int id)
+        // GET api/<OrderDetailController>/5
+        [HttpGet("{id}")]
+        public OrderDetail Get(int orderID, int foodID)
         {
-            return View();
+            return _connection.OrderDetails.Find(orderID, foodID);
         }
 
-        // GET: OrderDetails/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: OrderDetails/Create
+        // POST api/<OrderDetailController>
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public OrderDetail Post([FromBody] OrderDetail OrderDetail)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+             _connection.Insert(OrderDetail);
+
+            return _connection.OrderDetails.Find(OrderDetail.OrderID.Value, OrderDetail.FoodItem.Value);
         }
 
-        // GET: OrderDetails/Edit/5
-        public ActionResult Edit(int id)
+        // PUT api/<OrderDetailController>/5
+        [HttpPut("{id}")]
+        public OrderDetail Put(int orderID, int foodItemID, [FromBody] OrderDetail OrderDetail)
         {
-            return View();
+            //.connection.OrderDetails.InsertOrUpdate()
+            _connection.OrderDetails.Where(c => (c.OrderID == orderID && c.FoodItem == foodItemID))
+                .Set(t => t.FoodItem, OrderDetail.FoodItem)
+                .Set(t => t.Quantity, OrderDetail.Quantity)
+                .Set(t => t.OrderID, OrderDetail.OrderID)
+                .Update();
+            return _connection.OrderDetails.Find(Convert.ToInt32(orderID), (Convert.ToInt32(foodItemID)));
         }
 
-        // POST: OrderDetails/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        // DELETE api/<OrderDetailController>/5
+        [HttpDelete("{id}")]
+        public void Delete(int OrderID, int FoodItemID)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: OrderDetails/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: OrderDetails/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            _connection.OrderDetails.Where(t =>
+                (t.OrderID == OrderID && t.FoodItem == FoodItemID)).Delete();
         }
     }
 }
