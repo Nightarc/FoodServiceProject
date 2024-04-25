@@ -9,10 +9,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 
 using LinqToDB;
+using LinqToDB.Common;
 using LinqToDB.Configuration;
+using LinqToDB.Data;
 using LinqToDB.Mapping;
 
 namespace FoodServiceAPI.DataModels
@@ -73,7 +76,7 @@ namespace FoodServiceAPI.DataModels
 	[Table(Schema="FoodService", Name="Customer")]
 	public partial class Customer
 	{
-		[PrimaryKey, Identity   ] public int    CustomerID    { get; set; } // integer
+		[PrimaryKey, NotNull    ] public Guid   CustomerID    { get; set; } // uuid
 		[Column,        Nullable] public string Name          { get; set; } // character varying
 		[Column,        Nullable] public string Email         { get; set; } // character varying
 		[Column,        Nullable] public string LastAddress   { get; set; } // character varying
@@ -83,22 +86,22 @@ namespace FoodServiceAPI.DataModels
 		#region Associations
 
 		/// <summary>
+		/// CustomerID_FK_BackReference (FoodService.PromotionList)
+		/// </summary>
+		[Association(ThisKey="CustomerID", OtherKey="CustomerID", CanBeNull=true)]
+		public IEnumerable<PromotionList> CustomerIDFkBackReferences { get; set; }
+
+		/// <summary>
 		/// CustomerID_FK_BackReference (FoodService.Subscription)
 		/// </summary>
 		[Association(ThisKey="CustomerID", OtherKey="CustomerID", CanBeNull=true)]
-		public IEnumerable<Subscription> CustomerIDFkBackReferences { get; set; }
+		public IEnumerable<Subscription> CustomerIdfks { get; set; }
 
 		/// <summary>
 		/// CustomerID_FK_BackReference (FoodService.Order)
 		/// </summary>
 		[Association(ThisKey="CustomerID", OtherKey="CustomerID", CanBeNull=true)]
-		public IEnumerable<Order> CustomerIdfks { get; set; }
-
-		/// <summary>
-		/// CustomerID_FK_BackReference (FoodService.PromotionList)
-		/// </summary>
-		[Association(ThisKey="CustomerID", OtherKey="CustomerID", CanBeNull=true)]
-		public IEnumerable<PromotionList> FKCustomerIDFkBackReferences { get; set; }
+		public IEnumerable<Order> FKCustomerIDFkBackReferences { get; set; }
 
 		#endregion
 	}
@@ -106,9 +109,9 @@ namespace FoodServiceAPI.DataModels
 	[Table(Schema="FoodService", Name="DeliveryPoint")]
 	public partial class DeliveryPoint
 	{
-		[PrimaryKey, Identity] public int    DeliveryPointID { get; set; } // integer
-		[Column,     NotNull ] public string Address         { get; set; } // text
-		[Column,     NotNull ] public string Name            { get; set; } // text
+		[PrimaryKey, NotNull] public Guid   DeliveryPointID { get; set; } // uuid
+		[Column,     NotNull] public string Address         { get; set; } // text
+		[Column,     NotNull] public string Name            { get; set; } // text
 
 		#region Associations
 
@@ -124,7 +127,7 @@ namespace FoodServiceAPI.DataModels
 	[Table(Schema="FoodService", Name="Food")]
 	public partial class Food
 	{
-		[PrimaryKey, Identity   ] public int     FoodID      { get; set; } // integer
+		[PrimaryKey, NotNull    ] public Guid    FoodID      { get; set; } // uuid
 		[Column,     NotNull    ] public string  FoodName    { get; set; } // text
 		[Column,     NotNull    ] public decimal Price       { get; set; } // money
 		[Column,        Nullable] public string  Components  { get; set; } // text
@@ -144,13 +147,13 @@ namespace FoodServiceAPI.DataModels
 	[Table(Schema="FoodService", Name="Order")]
 	public partial class Order
 	{
-		[PrimaryKey, Identity   ] public int            OrderID         { get; set; } // integer
-		[Column,        Nullable] public int?           PaymentID       { get; set; } // integer
-		[Column,     NotNull    ] public int            CustomerID      { get; set; } // integer
+		[PrimaryKey, NotNull    ] public Guid           OrderID         { get; set; } // uuid
+		[Column,        Nullable] public Guid?          PaymentID       { get; set; } // uuid
+		[Column,     NotNull    ] public Guid           CustomerID      { get; set; } // uuid
 		[Column,     NotNull    ] public string         Address         { get; set; } // text
 		[Column,     NotNull    ] public DateTimeOffset Time            { get; set; } // timestamp (6) with time zone
 		[Column,     NotNull    ] public DateTime       Date            { get; set; } // date
-		[Column,        Nullable] public int?           DeliveryPointID { get; set; } // integer
+		[Column,        Nullable] public Guid?          DeliveryPointID { get; set; } // uuid
 
 		#region Associations
 
@@ -184,9 +187,9 @@ namespace FoodServiceAPI.DataModels
 	[Table(Schema="FoodService", Name="OrderDetails")]
 	public partial class OrderDetail
 	{
-		[Column, Nullable] public int? FoodItem { get; set; } // integer
-		[Column, Nullable] public int? Quantity { get; set; } // integer
-		[Column, Nullable] public int? OrderID  { get; set; } // integer
+		[Column, Nullable] public Guid? FoodItem { get; set; } // uuid
+		[Column, Nullable] public int?  Quantity { get; set; } // integer
+		[Column, Nullable] public Guid? OrderID  { get; set; } // uuid
 
 		#region Associations
 
@@ -214,25 +217,25 @@ namespace FoodServiceAPI.DataModels
 	[Table(Schema="FoodService", Name="Payment")]
 	public partial class Payment
 	{
-		[PrimaryKey, Identity] public int            PaymentID     { get; set; } // integer
-		[Column,     NotNull ] public decimal        NetPrice      { get; set; } // money
-		[Column,     NotNull ] public decimal        PaymentAmount { get; set; } // money
-		[Column,     NotNull ] public DateTimeOffset Time          { get; set; } // time with time zone
-		[Column,     NotNull ] public DateTime       Date          { get; set; } // date
+		[PrimaryKey, NotNull] public Guid           PaymentID     { get; set; } // uuid
+		[Column,     NotNull] public decimal        NetPrice      { get; set; } // money
+		[Column,     NotNull] public decimal        PaymentAmount { get; set; } // money
+		[Column,     NotNull] public DateTimeOffset Time          { get; set; } // time with time zone
+		[Column,     NotNull] public DateTime       Date          { get; set; } // date
 
 		#region Associations
-
-		/// <summary>
-		/// PaymentID_FK_BackReference (FoodService.Subscription)
-		/// </summary>
-		[Association(ThisKey="PaymentID", OtherKey="PaymentID", CanBeNull=true)]
-		public IEnumerable<Subscription> PaymentIDFkBackReferences { get; set; }
 
 		/// <summary>
 		/// PaymentID_FK_BackReference (FoodService.Order)
 		/// </summary>
 		[Association(ThisKey="PaymentID", OtherKey="PaymentID", CanBeNull=true)]
-		public IEnumerable<Order> PaymentIdfks { get; set; }
+		public IEnumerable<Order> PaymentIDFkBackReferences { get; set; }
+
+		/// <summary>
+		/// PaymentID_FK_BackReference (FoodService.Subscription)
+		/// </summary>
+		[Association(ThisKey="PaymentID", OtherKey="PaymentID", CanBeNull=true)]
+		public IEnumerable<Subscription> PaymentIdfks { get; set; }
 
 		#endregion
 	}
@@ -240,9 +243,9 @@ namespace FoodServiceAPI.DataModels
 	[Table(Schema="FoodService", Name="Promotion")]
 	public partial class Promotion
 	{
-		[PrimaryKey, Identity] public int    PromotionID { get; set; } // integer
-		[Column,     NotNull ] public int    Discount    { get; set; } // integer
-		[Column,     NotNull ] public string Name        { get; set; } // text
+		[PrimaryKey, NotNull] public Guid   PromotionID { get; set; } // uuid
+		[Column,     NotNull] public int    Discount    { get; set; } // integer
+		[Column,     NotNull] public string Name        { get; set; } // text
 
 		#region Associations
 
@@ -258,8 +261,8 @@ namespace FoodServiceAPI.DataModels
 	[Table(Schema="FoodService", Name="PromotionList")]
 	public partial class PromotionList
 	{
-		[Column, Nullable] public int? CustomerID  { get; set; } // integer
-		[Column, Nullable] public int? PromotionID { get; set; } // integer
+		[Column, Nullable] public Guid? CustomerID  { get; set; } // uuid
+		[Column, Nullable] public Guid? PromotionID { get; set; } // uuid
 
 		#region Associations
 
@@ -281,12 +284,12 @@ namespace FoodServiceAPI.DataModels
 	[Table(Schema="FoodService", Name="Subscription")]
 	public partial class Subscription
 	{
-		[PrimaryKey, Identity] public int       SubscriptionID   { get; set; } // integer
-		[Column,     Nullable] public DateTime? DateStart        { get; set; } // date
-		[Column,     Nullable] public DateTime? DateEnd          { get; set; } // date
-		[Column,     Nullable] public int?      CustomerID       { get; set; } // integer
-		[Column,     Nullable] public int?      PaymentID        { get; set; } // integer
-		[Column,     Nullable] public int?      SubscriptionType { get; set; } // integer
+		[PrimaryKey, NotNull    ] public Guid      SubscriptionID   { get; set; } // uuid
+		[Column,        Nullable] public DateTime? DateStart        { get; set; } // date
+		[Column,        Nullable] public DateTime? DateEnd          { get; set; } // date
+		[Column,        Nullable] public Guid?     CustomerID       { get; set; } // uuid
+		[Column,        Nullable] public Guid?     PaymentID        { get; set; } // uuid
+		[Column,        Nullable] public Guid?     SubscriptionType { get; set; } // uuid
 
 		#region Associations
 
@@ -314,9 +317,9 @@ namespace FoodServiceAPI.DataModels
 	[Table(Schema="FoodService", Name="SubscriptionType")]
 	public partial class SubscriptionType
 	{
-		[PrimaryKey, Identity] public int    SubscriptionTypeID { get; set; } // integer
-		[Column,     Nullable] public string Description        { get; set; } // text
-		[Column,     Nullable] public int?   OrderTemplate      { get; set; } // integer
+		[PrimaryKey, NotNull    ] public Guid   SubscriptionTypeID { get; set; } // uuid
+		[Column,        Nullable] public string Description        { get; set; } // text
+		[Column,        Nullable] public Guid?  OrderTemplate      { get; set; } // uuid
 
 		#region Associations
 
@@ -335,62 +338,165 @@ namespace FoodServiceAPI.DataModels
 		#endregion
 	}
 
+	public static partial class SqlFunctions
+	{
+		#region UuidGenerateV1
+
+		[Sql.Function(Name="\"\"\"FoodService\"\"\".uuid_generate_v1", ServerSideOnly=true)]
+		public static Guid? UuidGenerateV1()
+		{
+			throw new InvalidOperationException();
+		}
+
+		#endregion
+
+		#region UuidGenerateV1mc
+
+		[Sql.Function(Name="\"\"\"FoodService\"\"\".uuid_generate_v1mc", ServerSideOnly=true)]
+		public static Guid? UuidGenerateV1mc()
+		{
+			throw new InvalidOperationException();
+		}
+
+		#endregion
+
+		#region UuidGenerateV3
+
+		[Sql.Function(Name="\"\"\"FoodService\"\"\".uuid_generate_v3", ServerSideOnly=true)]
+		public static Guid? UuidGenerateV3(Guid? @namespace, string name)
+		{
+			throw new InvalidOperationException();
+		}
+
+		#endregion
+
+		#region UuidGenerateV4
+
+		[Sql.Function(Name="\"\"\"FoodService\"\"\".uuid_generate_v4", ServerSideOnly=true)]
+		public static Guid? UuidGenerateV4()
+		{
+			throw new InvalidOperationException();
+		}
+
+		#endregion
+
+		#region UuidGenerateV5
+
+		[Sql.Function(Name="\"\"\"FoodService\"\"\".uuid_generate_v5", ServerSideOnly=true)]
+		public static Guid? UuidGenerateV5(Guid? @namespace, string name)
+		{
+			throw new InvalidOperationException();
+		}
+
+		#endregion
+
+		#region UuidNil
+
+		[Sql.Function(Name="\"\"\"FoodService\"\"\".uuid_nil", ServerSideOnly=true)]
+		public static Guid? UuidNil()
+		{
+			throw new InvalidOperationException();
+		}
+
+		#endregion
+
+		#region UuidNsDns
+
+		[Sql.Function(Name="\"\"\"FoodService\"\"\".uuid_ns_dns", ServerSideOnly=true)]
+		public static Guid? UuidNsDns()
+		{
+			throw new InvalidOperationException();
+		}
+
+		#endregion
+
+		#region UuidNsOid
+
+		[Sql.Function(Name="\"\"\"FoodService\"\"\".uuid_ns_oid", ServerSideOnly=true)]
+		public static Guid? UuidNsOid()
+		{
+			throw new InvalidOperationException();
+		}
+
+		#endregion
+
+		#region UuidNsUrl
+
+		[Sql.Function(Name="\"\"\"FoodService\"\"\".uuid_ns_url", ServerSideOnly=true)]
+		public static Guid? UuidNsUrl()
+		{
+			throw new InvalidOperationException();
+		}
+
+		#endregion
+
+		#region UuidNsX500
+
+		[Sql.Function(Name="\"\"\"FoodService\"\"\".uuid_ns_x500", ServerSideOnly=true)]
+		public static Guid? UuidNsX500()
+		{
+			throw new InvalidOperationException();
+		}
+
+		#endregion
+	}
+
 	public static partial class TableExtensions
 	{
-		public static Customer Find(this ITable<Customer> table, int CustomerID)
+		public static Customer Find(this ITable<Customer> table, Guid CustomerID)
 		{
 			return table.FirstOrDefault(t =>
 				t.CustomerID == CustomerID);
 		}
 
-		public static DeliveryPoint Find(this ITable<DeliveryPoint> table, int DeliveryPointID)
+		public static DeliveryPoint Find(this ITable<DeliveryPoint> table, Guid DeliveryPointID)
 		{
 			return table.FirstOrDefault(t =>
 				t.DeliveryPointID == DeliveryPointID);
 		}
 
-		public static Food Find(this ITable<Food> table, int FoodID)
+		public static Food Find(this ITable<Food> table, Guid FoodID)
 		{
 			return table.FirstOrDefault(t =>
 				t.FoodID == FoodID);
 		}
 
-		public static Order Find(this ITable<Order> table, int OrderID)
+		public static Order Find(this ITable<Order> table, Guid OrderID)
 		{
 			return table.FirstOrDefault(t =>
 				t.OrderID == OrderID);
 		}
 
-        public static OrderDetail Find(this ITable<OrderDetail> table, int OrderID, int FoodItemID)
+        public static OrderDetail Find(this ITable<OrderDetail> table, Guid OrderID, Guid FoodItem)
         {
-            return table.FirstOrDefault(t =>
-                (t.OrderID == OrderID && t.FoodItem == FoodItemID));
+            return table.FirstOrDefault(
+				t => t.OrderID == OrderID && t.FoodItem == FoodItem);
         }
 
-        public static Payment Find(this ITable<Payment> table, int PaymentID)
+        public static Payment Find(this ITable<Payment> table, Guid PaymentID)
 		{
 			return table.FirstOrDefault(t =>
 				t.PaymentID == PaymentID);
 		}
 
-		public static Promotion Find(this ITable<Promotion> table, int PromotionID)
+		public static Promotion Find(this ITable<Promotion> table, Guid PromotionID)
 		{
 			return table.FirstOrDefault(t =>
 				t.PromotionID == PromotionID);
 		}
-        public static PromotionList Find(this ITable<PromotionList> table, int CustomerID, int PromotionID)
+        public static PromotionList Find(this ITable<PromotionList> table, Guid PromotionID, Guid CustomerID)
         {
-            return table.FirstOrDefault(t =>
-                (t.CustomerID == CustomerID && t.PromotionID == PromotionID));
+            return table.FirstOrDefault(
+                t => t.PromotionID == PromotionID && t.CustomerID == CustomerID);
         }
 
-        public static Subscription Find(this ITable<Subscription> table, int SubscriptionID)
+        public static Subscription Find(this ITable<Subscription> table, Guid SubscriptionID)
 		{
 			return table.FirstOrDefault(t =>
 				t.SubscriptionID == SubscriptionID);
 		}
 
-		public static SubscriptionType Find(this ITable<SubscriptionType> table, int SubscriptionTypeID)
+		public static SubscriptionType Find(this ITable<SubscriptionType> table, Guid SubscriptionTypeID)
 		{
 			return table.FirstOrDefault(t =>
 				t.SubscriptionTypeID == SubscriptionTypeID);

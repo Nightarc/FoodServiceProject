@@ -21,23 +21,24 @@ namespace FoodServiceAPI.Controllers
 
         // GET api/<OrderController>/5
         [HttpGet("{id}")]
-        public Order Get(int id)
+        public Order Get(Guid id)
         {
             return _connection.Orders.Find(id);
         }
 
         // POST api/<OrderController>
         [HttpPost]
-        public Order Post([FromBody] Order order)
+        public Order Post([FromBody] Order Order)
         {
-            var id = _connection.InsertWithIdentity(order);
+            Order.OrderID = Guid.NewGuid();
+            _connection.Insert(Order);
 
-            return _connection.Orders.Find(Convert.ToInt32(id));
+            return _connection.Orders.Find(Order.OrderID);
         }
 
         // PUT api/<OrderController>/5
         [HttpPut("{id}")]
-        public Order Put(int id, [FromBody] Order order)
+        public Order Put(Guid id, [FromBody] Order order)
         {
             _connection.Orders.Where(c => c.OrderID == id)
                 .Set(t => t.Address, order.Address)
@@ -48,12 +49,12 @@ namespace FoodServiceAPI.Controllers
                 .Set(t => t.DeliveryPointID, order.DeliveryPointID)
                 .Update();
 
-            return _connection.Orders.Find(Convert.ToInt32(id));
+            return _connection.Orders.Find(id);
         }
 
         // DELETE api/<OrderController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public void Delete(Guid id)
         {
             _connection.Orders.Where(c => c.OrderID == id).Delete();
         }

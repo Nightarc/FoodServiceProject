@@ -22,7 +22,7 @@ namespace FoodServiceAPI.Controllers
 
         // GET api/<CustomerController>/5
         [HttpGet("{id}")]
-        public Food Get(int id)
+        public Food Get(Guid id)
         {
             return _connection.Foods.Find(id);
         }
@@ -31,14 +31,15 @@ namespace FoodServiceAPI.Controllers
         [HttpPost]
         public Food Post([FromBody] Food Food)
         {
-            var customerID = _connection.InsertWithIdentity(Food);
+            Food.FoodID = Guid.NewGuid();
+            _connection.Insert(Food);
 
-            return _connection.Foods.Find(Convert.ToInt32(customerID));
+            return _connection.Foods.Find(Food.FoodID);
         }
 
         // PUT api/<CustomerController>/5
         [HttpPut("{id}")]
-        public Food Put(int id, [FromBody] Food Food)
+        public Food Put(Guid id, [FromBody] Food Food)
         {
             _connection.Foods.Where(c => c.FoodID == id)
                 .Set(t => t.FoodName, Food.FoodName)
@@ -46,12 +47,12 @@ namespace FoodServiceAPI.Controllers
                 .Set(t => t.Components, Food.Components)
                 .Set(t => t.Description, Food.Description)
                 .Update();
-            return _connection.Foods.Find(Convert.ToInt32(id));
+            return _connection.Foods.Find(id);
         }
 
         // DELETE api/<CustomerController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public void Delete(Guid id)
         {
             _connection.Foods.Where(c => c.FoodID == id).Delete();
         }

@@ -22,7 +22,7 @@ namespace FoodServiceAPI.Controllers
 
         // GET api/<PaymentController>/5
         [HttpGet("{id}")]
-        public Payment Get(int id)
+        public Payment Get(Guid id)
         {
             return _connection.Payments.Find(id);
         }
@@ -31,14 +31,15 @@ namespace FoodServiceAPI.Controllers
         [HttpPost]
         public Payment Post([FromBody] Payment Payment)
         {
-            var PaymentID = _connection.InsertWithIdentity(Payment);
+            Payment.PaymentID = Guid.NewGuid();
+            _connection.Insert(Payment);
 
-            return _connection.Payments.Find(Convert.ToInt32(PaymentID));
+            return _connection.Payments.Find(Payment.PaymentID);
         }
 
         // PUT api/<PaymentController>/5
         [HttpPut("{id}")]
-        public Payment Put(int id, [FromBody] Payment Payment)
+        public Payment Put(Guid id, [FromBody] Payment Payment)
         {
             //.connection.Payments.InsertOrUpdate()
             _connection.Payments.Where(c => c.PaymentID == id)
@@ -47,12 +48,12 @@ namespace FoodServiceAPI.Controllers
                 .Set(t => t.Time, Payment.Time)
                 .Set(t => t.Date, Payment.Date)
                 .Update();
-            return _connection.Payments.Find(Convert.ToInt32(id));
+            return _connection.Payments.Find(id);
         }
 
         // DELETE api/<PaymentController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public void Delete(Guid id)
         {
             _connection.Payments.Where(c => c.PaymentID == id).Delete();
         }

@@ -22,7 +22,7 @@ namespace FoodServiceAPI.Controllers
 
         // GET api/<DeliveryPointController>/5
         [HttpGet("{id}")]
-        public DeliveryPoint Get(int id)
+        public DeliveryPoint Get(Guid id)
         {
             return _connection.DeliveryPoints.Find(id);
         }
@@ -31,26 +31,27 @@ namespace FoodServiceAPI.Controllers
         [HttpPost]
         public DeliveryPoint Post([FromBody] DeliveryPoint DeliveryPoint)
         {
-            var DeliveryPointID = _connection.InsertWithIdentity(DeliveryPoint);
+            DeliveryPoint.DeliveryPointID = Guid.NewGuid();
+            _connection.Insert(DeliveryPoint);
 
-            return _connection.DeliveryPoints.Find(Convert.ToInt32(DeliveryPointID));
+            return _connection.DeliveryPoints.Find(DeliveryPoint.DeliveryPointID);
         }
 
         // PUT api/<DeliveryPointController>/5
         [HttpPut("{id}")]
-        public DeliveryPoint Put(int id, [FromBody] DeliveryPoint DeliveryPoint)
+        public DeliveryPoint Put(Guid id, [FromBody] DeliveryPoint DeliveryPoint)
         {
             //.connection.DeliveryPoints.InsertOrUpdate()
             _connection.DeliveryPoints.Where(c => c.DeliveryPointID == id)
                 .Set(t => t.Name, DeliveryPoint.Name)
                 .Set(t => t.Address, DeliveryPoint.Address)
                 .Update();
-            return _connection.DeliveryPoints.Find(Convert.ToInt32(id));
+            return _connection.DeliveryPoints.Find(id);
         }
 
         // DELETE api/<DeliveryPointController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public void Delete(Guid id)
         {
             _connection.DeliveryPoints.Where(c => c.DeliveryPointID == id).Delete();
         }

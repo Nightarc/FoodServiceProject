@@ -22,7 +22,7 @@ namespace FoodServiceAPI.Controllers
 
         // GET api/<PromotionController>/5
         [HttpGet("{id}")]
-        public Promotion Get(int id)
+        public Promotion Get(Guid id)
         {
             return _connection.Promotions.Find(id);
         }
@@ -31,26 +31,27 @@ namespace FoodServiceAPI.Controllers
         [HttpPost]
         public Promotion Post([FromBody] Promotion Promotion)
         {
-            var PromotionID = _connection.InsertWithIdentity(Promotion);
+            Promotion.PromotionID = Guid.NewGuid();
+            _connection.Insert(Promotion);
 
-            return _connection.Promotions.Find(Convert.ToInt32(PromotionID));
+            return _connection.Promotions.Find(Promotion.PromotionID);
         }
 
         // PUT api/<PromotionController>/5
         [HttpPut("{id}")]
-        public Promotion Put(int id, [FromBody] Promotion Promotion)
+        public Promotion Put(Guid id, [FromBody] Promotion Promotion)
         {
             //.connection.Promotions.InsertOrUpdate()
             _connection.Promotions.Where(c => c.PromotionID == id)
                 .Set(t => t.Name, Promotion.Name)
                 .Set(t => t.Discount, Promotion.Discount)
                 .Update();
-            return _connection.Promotions.Find(Convert.ToInt32(id));
+            return _connection.Promotions.Find(id);
         }
 
         // DELETE api/<PromotionController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public void Delete(Guid id)
         {
             _connection.Promotions.Where(c => c.PromotionID == id).Delete();
         }

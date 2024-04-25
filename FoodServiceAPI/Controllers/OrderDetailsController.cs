@@ -22,7 +22,7 @@ namespace FoodServiceAPI.Controllers
 
         // GET api/<OrderDetailController>/5
         [HttpGet("{id}")]
-        public OrderDetail Get(int orderID, int foodID)
+        public OrderDetail Get(Guid orderID, Guid foodID)
         {
             return _connection.OrderDetails.Find(orderID, foodID);
         }
@@ -31,14 +31,14 @@ namespace FoodServiceAPI.Controllers
         [HttpPost]
         public OrderDetail Post([FromBody] OrderDetail OrderDetail)
         {
-             _connection.Insert(OrderDetail);
+            _connection.Insert(OrderDetail);
 
-            return _connection.OrderDetails.Find(OrderDetail.OrderID.Value, OrderDetail.FoodItem.Value);
+            return _connection.OrderDetails.Find((Guid)OrderDetail.OrderID, (Guid)OrderDetail.FoodItem);
         }
 
         // PUT api/<OrderDetailController>/5
         [HttpPut("{id}")]
-        public OrderDetail Put(int orderID, int foodItemID, [FromBody] OrderDetail OrderDetail)
+        public OrderDetail Put(Guid orderID, Guid foodItemID, [FromBody] OrderDetail OrderDetail)
         {
             //.connection.OrderDetails.InsertOrUpdate()
             _connection.OrderDetails.Where(c => (c.OrderID == orderID && c.FoodItem == foodItemID))
@@ -46,12 +46,12 @@ namespace FoodServiceAPI.Controllers
                 .Set(t => t.Quantity, OrderDetail.Quantity)
                 .Set(t => t.OrderID, OrderDetail.OrderID)
                 .Update();
-            return _connection.OrderDetails.Find(Convert.ToInt32(orderID), (Convert.ToInt32(foodItemID)));
+            return _connection.OrderDetails.Find(orderID, foodItemID);
         }
 
         // DELETE api/<OrderDetailController>/5
         [HttpDelete("{id}")]
-        public void Delete(int OrderID, int FoodItemID)
+        public void Delete(Guid OrderID, Guid FoodItemID)
         {
             _connection.OrderDetails.Where(t =>
                 (t.OrderID == OrderID && t.FoodItem == FoodItemID)).Delete();

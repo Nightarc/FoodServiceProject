@@ -22,7 +22,7 @@ namespace FoodServiceAPI.Controllers
 
         // GET api/<SubscriptionController>/5
         [HttpGet("{id}")]
-        public Subscription Get(int id)
+        public Subscription Get(Guid id)
         {
             return _connection.Subscriptions.Find(id);
         }
@@ -31,14 +31,15 @@ namespace FoodServiceAPI.Controllers
         [HttpPost]
         public Subscription Post([FromBody] Subscription Subscription)
         {
-            var SubscriptionID = _connection.InsertWithIdentity(Subscription);
+            Subscription.SubscriptionID = Guid.NewGuid();
+            _connection.Insert(Subscription);
 
-            return _connection.Subscriptions.Find(Convert.ToInt32(SubscriptionID));
+            return _connection.Subscriptions.Find(Subscription.SubscriptionID);
         }
 
         // PUT api/<SubscriptionController>/5
         [HttpPut("{id}")]
-        public Subscription Put(int id, [FromBody] Subscription Subscription)
+        public Subscription Put(Guid id, [FromBody] Subscription Subscription)
         {
             //.connection.Subscriptions.InsertOrUpdate()
             _connection.Subscriptions.Where(c => c.SubscriptionID == id)
@@ -48,12 +49,12 @@ namespace FoodServiceAPI.Controllers
                 .Set(t => t.PaymentID, Subscription.PaymentID)
                 .Set(t => t.SubscriptionType, Subscription.SubscriptionType)
                 .Update();
-            return _connection.Subscriptions.Find(Convert.ToInt32(id));
+            return _connection.Subscriptions.Find(id);
         }
 
         // DELETE api/<SubscriptionController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public void Delete(Guid id)
         {
             _connection.Subscriptions.Where(c => c.SubscriptionID == id).Delete();
         }
