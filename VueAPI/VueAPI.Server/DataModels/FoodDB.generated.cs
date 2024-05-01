@@ -132,13 +132,14 @@ namespace VueAPI.Server.DataModels
 		[Column,     NotNull    ] public decimal Price       { get; set; } // money
 		[Column,        Nullable] public string  Components  { get; set; } // text
 		[Column,        Nullable] public string  Description { get; set; } // text
+		[Column,        Nullable] public string  ImagePath { get; set; } // text
 
-		#region Associations
+        #region Associations
 
-		/// <summary>
-		/// FoodID_FK_BackReference (FoodService.OrderDetails)
-		/// </summary>
-		[Association(ThisKey="FoodID", OtherKey="FoodItem", CanBeNull=true)]
+        /// <summary>
+        /// FoodID_FK_BackReference (FoodService.OrderDetails)
+        /// </summary>
+        [Association(ThisKey="FoodID", OtherKey="FoodItem", CanBeNull=true)]
 		public IEnumerable<OrderDetail> FoodIdfks { get; set; }
 
 		#endregion

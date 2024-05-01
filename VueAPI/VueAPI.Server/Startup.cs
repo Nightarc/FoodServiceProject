@@ -9,6 +9,7 @@ namespace VueAPI.Server
     {
         public static void Main(string[] args)
         {
+            var MyAllowSpecificOrigins = "_MyAllowSpecificOrigins";
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
@@ -22,6 +23,15 @@ namespace VueAPI.Server
                     .UsePostgreSQL("Server=localhost;Port=5432;Database=postgres;UserId=postgres;Password=admin;")
                     //default logging will log everything using the ILoggerFactory configured in the provider
                     .UseDefaultLogging(provider));
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                    policy =>
+                    {
+                        policy.WithOrigins("http://localhost:5173",
+                                           "https://localhost:5173");
+                    });
+            });
 
             var app = builder.Build();
 
@@ -36,6 +46,8 @@ namespace VueAPI.Server
             }
 
             app.UseHttpsRedirection();
+
+            app.UseCors(MyAllowSpecificOrigins);
 
             app.UseAuthorization();
 
