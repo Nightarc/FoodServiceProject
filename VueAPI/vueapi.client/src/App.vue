@@ -1,9 +1,10 @@
 ﻿<script setup>
-import CardHolder from './components/CardHolder.vue'
 </script>
 
 <template>
-    <CardHolder />
+    <div>
+      <RouterView />
+    </div>
 </template>
 
 <style scoped>
