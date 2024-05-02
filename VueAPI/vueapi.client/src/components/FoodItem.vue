@@ -36,7 +36,5 @@
         background: #f5f5f5;
         margin: 5px;
     }
-    .FoodItem {
-    }
 
 </style>

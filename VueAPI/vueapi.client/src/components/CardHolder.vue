@@ -52,5 +52,4 @@ export default defineComponent({
 
 
 <style>
-.foodItem {}
 </style>
