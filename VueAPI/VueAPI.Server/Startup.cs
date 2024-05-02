@@ -47,7 +47,9 @@ namespace VueAPI.Server
 
             app.UseHttpsRedirection();
 
-            app.UseCors(MyAllowSpecificOrigins);
+            app.UseCors(builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyHeader());
 
             app.UseAuthorization();
 
