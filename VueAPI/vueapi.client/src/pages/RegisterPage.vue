@@ -1,26 +1,8 @@
-<template>
-    <div class="registerForm">
-        <form class="form">
-            <h2>Регистрация пользователя</h2>
-            <input v-model.trim="name" class="input" type="text" placeholder="Имя">
-            <span class="errorSpan" v-if="v$.name.$error">{{v$.name.$errors[0].$message}}</span>
-            <input v-model.trim="address" class="input" type="text" placeholder="Адрес">
-            <span class="errorSpan" v-if="v$.address.$error">{{v$.address.$errors[0].$message}}</span>
-            <input v-model.trim="email" class="input" type="text" placeholder="Электронная почта">
-            <span class="errorSpan" v-if="v$.email.$error">{{v$.email.$errors[0].$message}}</span>
-            <input v-model.trim="phoneNumber" class="input" type="text" placeholder="Номер телефона">
-            <span class="errorSpan" v-if="v$.phoneNumber.$error">{{v$.phoneNumber.$errors[0].$message}}</span>
-            <button class="registerButton" type="button" @click="postUser">Зарегистрироваться</button>
-        </form>
-        <div v-if="posted">
-            Регистрация прошла успешно!
-        </div>
-    </div>
-</template>
-
 <script>
+import MyHeader from '@/components/MyHeader.vue';
 import { email$, minLength$, required$, validPhoneNumber$ } from '@/validators';
 import useVuelidate from '@vuelidate/core';
+
 
 import axios from 'axios';
 
@@ -29,6 +11,9 @@ import axios from 'axios';
 export default {
     setup() {
         return { v$: useVuelidate() }
+    },
+    components : {
+        MyHeader,
     },
     data() {
         return {
@@ -48,6 +33,7 @@ export default {
             email: { required$, email$, minLength : minLength$(3)},
         }
     },
+    
     methods: {
         postUser() {
             this.v$.$validate();
@@ -65,15 +51,35 @@ export default {
 }
 </script>
 
-<style scoped>
-* {
-    padding: 0;
-    box-sizing: border-box;
-}
+<template>
+    <MyHeader />
 
+    <div class="registerForm">
+        <form class="form">
+            <h2>Регистрация пользователя</h2>
+            <input v-model.trim="name" class="input" type="text" placeholder="Имя">
+            <span class="errorSpan" v-if="v$.name.$error">{{v$.name.$errors[0].$message}}</span>
+            <input v-model.trim="address" class="input" type="text" placeholder="Адрес">
+            <span class="errorSpan" v-if="v$.address.$error">{{v$.address.$errors[0].$message}}</span>
+            <input v-model.trim="email" class="input" type="text" placeholder="Электронная почта">
+            <span class="errorSpan" v-if="v$.email.$error">{{v$.email.$errors[0].$message}}</span>
+            <input v-model.trim="phoneNumber" class="input" type="text" placeholder="Номер телефона">
+            <span class="errorSpan" v-if="v$.phoneNumber.$error">{{v$.phoneNumber.$errors[0].$message}}</span>
+            <button class="registerButton" type="button" @click="postUser">Зарегистрироваться</button>
+        </form>
+        <div v-if="posted">
+            Регистрация прошла успешно!
+        </div>
+    </div>
+</template>
+
+
+
+<style scoped>
 .form {
     display: flex;
     flex-direction: column;
+    width:60%;
 }
 
 .registerForm {

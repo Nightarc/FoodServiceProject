@@ -1,4 +1,5 @@
 <template>
+    <MyHeader />
     <div class="registerForm">
         <form class="form">
             <h2>Вход в учетную запись</h2>
@@ -12,9 +13,13 @@
 </template>
 
 <script>
+import MyHeader from '@/components/MyHeader.vue';
 import axios from 'axios';
 
 export default {
+    components : {
+        MyHeader,
+    },
     data() {
         return {
             name: "",
@@ -45,11 +50,6 @@ export default {
 </script>
 
 <style scoped>
-* {
-    padding: 0;
-    box-sizing: border-box;
-}
-
 .form {
     display: flex;
     flex-direction: column;

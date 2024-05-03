@@ -8,7 +8,4 @@
 </template>
 
 <style scoped>
-.app {
-  display: flex;
-}
 </style>

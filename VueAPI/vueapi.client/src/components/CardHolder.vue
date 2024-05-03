@@ -1,13 +1,15 @@
-﻿<template>
-    <div class="foodItem" v-for="item in post" :key="item.title">
-        <FoodItem :title="item.foodName" :imagePath="item.imagePath" />
+﻿<template>   
+    <div class="cardHolder">
+        <div class="foodItem" v-for="item in post" :key="item.title">
+            <FoodItem :title="item.foodName" :imagePath="item.imagePath" />
+        </div>
     </div>
 
 </template>
 
 
 <script>
-import FoodItem from './FoodItem.vue'
+import FoodItem from '@/components/FoodItem.vue'
 import { defineComponent } from 'vue';
 
 export default defineComponent({
@@ -52,4 +54,10 @@ export default defineComponent({
 
 
 <style>
+.cardHolder {
+    display: flex;
+    max-width: 1920px;
+    flex-wrap:wrap;
+}
+
 </style>

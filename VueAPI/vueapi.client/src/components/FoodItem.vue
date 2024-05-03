@@ -35,6 +35,8 @@
         border: 1px solid gray;
         background: #f5f5f5;
         margin: 5px;
+        flex-direction: column;
+        gap:0.25rem;
     }
 
 </style>
