@@ -4,7 +4,7 @@ import LoginPage from "./pages/LoginPage.vue";
 import CardHolder from './components/CardHolder.vue';
 
 const routes = [
-    {path: '/index', component: CardHolder},
+    {path: '/', component: CardHolder},
     {path: '/register', component: RegisterPage},
     {path: '/login', component: LoginPage},
 ]

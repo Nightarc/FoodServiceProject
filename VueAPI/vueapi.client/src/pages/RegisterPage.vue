@@ -2,56 +2,64 @@
     <div class="registerForm">
         <form class="form">
             <h2>Регистрация пользователя</h2>
-            <input :value="name" 
-                @input="name = $event.target.value" 
-                class="input" 
-                type="text"            
-                placeholder="Имя">
-            <input 
-                :value="address" 
-                @input="address = $event.target.value" 
-                class="input" type="text"         
-                placeholder="Адрес">
-            <input 
-                :value="email" 
-                @input="email = $event.target.value"
-                class="input" 
-                type="text"           
-                placeholder="Электронная почта">
-            <input 
-                :value="phoneNumber" 
-                @input="phoneNumber = $event.target.value" 
-                class="input" type="text"     
-                placeholder="Номер телефона">
+            <input v-model.trim="name" class="input" type="text" placeholder="Имя">
+            <span class="errorSpan" v-if="v$.name.$error">{{v$.name.$errors[0].$message}}</span>
+            <input v-model.trim="address" class="input" type="text" placeholder="Адрес">
+            <span class="errorSpan" v-if="v$.address.$error">{{v$.address.$errors[0].$message}}</span>
+            <input v-model.trim="email" class="input" type="text" placeholder="Электронная почта">
+            <span class="errorSpan" v-if="v$.email.$error">{{v$.email.$errors[0].$message}}</span>
+            <input v-model.trim="phoneNumber" class="input" type="text" placeholder="Номер телефона">
+            <span class="errorSpan" v-if="v$.phoneNumber.$error">{{v$.phoneNumber.$errors[0].$message}}</span>
             <button class="registerButton" type="button" @click="postUser">Зарегистрироваться</button>
         </form>
         <div v-if="posted">
-            ЭТО ТЫ НАСРАЛ В ДРОППОДЕ?
+            Регистрация прошла успешно!
         </div>
     </div>
 </template>
 
 <script>
+import { email$, minLength$, required$, validPhoneNumber$ } from '@/validators';
+import useVuelidate from '@vuelidate/core';
+
 import axios from 'axios';
 
+
+
 export default {
+    setup() {
+        return { v$: useVuelidate() }
+    },
     data() {
         return {
             name: "",
             address: "",
             phoneNumber: "",
             email: "",
-            
-            postedId:"",
-            posted:false    
+            postedId: "",
+            posted: false
+        }
+    },
+    validations() {
+        return {
+            name: { required$ , minLength : minLength$(3)},
+            phoneNumber: { required$, validPhoneNumber$ },
+            address: { required$, minLength : minLength$(10)},
+            email: { required$, email$, minLength : minLength$(3)},
         }
     },
     methods: {
         postUser() {
-            const user = {name:this.name, lastAddress:this.address, phoneNumber:this.phoneNumber, email:this.email}
-            axios
-                .post("http://localhost:5174/api/Customer", user)
-                .then(() => this.posted = true)
+            this.v$.$validate();
+            if(!this.v$.$error)
+            {
+                const user = { name: this.name, lastAddress: this.address, phoneNumber: this.phoneNumber, email: this.email }
+                axios.post("http://localhost:5174/api/Customer", user)
+                    .catch(() => this.error = true)
+                    .then(() => this.posted = true)
+                    .then(this.$router.push('/'))
+            }
+
         }
     }
 }
@@ -80,6 +88,9 @@ export default {
     padding: 10px 15px
 }
 
+.errorSpan {
+    color: darkred  ;
+}
 .registerButton {
     border: 1px solid teal;
     padding: 5px;
