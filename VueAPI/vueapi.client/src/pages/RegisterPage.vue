@@ -20,6 +20,7 @@ export default {
             name: "",
             address: "",
             phoneNumber: "",
+            password: "",
             email: "",
             postedId: "",
             posted: false
@@ -31,6 +32,7 @@ export default {
             phoneNumber: { required$, validPhoneNumber$ },
             address: { required$, minLength : minLength$(10)},
             email: { required$, email$, minLength : minLength$(3)},
+            password: { required$, minLength : minLength$(5)},
         }
     },
     
@@ -39,11 +41,17 @@ export default {
             this.v$.$validate();
             if(!this.v$.$error)
             {
-                const user = { name: this.name, lastAddress: this.address, phoneNumber: this.phoneNumber, email: this.email }
-                axios.post("http://localhost:5174/api/Customer", user)
+                const user = { name: this.name, lastAddress: this.address, phoneNumber: this.phoneNumber, email: this.email, passHash : this.password }
+                try {
+                    axios.post("http://localhost:5174/api/Customer", user)
                     .catch(() => this.error = true)
                     .then(() => this.posted = true)
+                    .then(alert("Регистрация прошла успешно!"))
                     .then(this.$router.push('/'))
+                }
+                catch(error) {
+                    alert("Что-то пошло не так") 
+                }
             }
 
         }
@@ -65,6 +73,8 @@ export default {
             <span class="errorSpan" v-if="v$.email.$error">{{v$.email.$errors[0].$message}}</span>
             <input v-model.trim="phoneNumber" class="input" type="text" placeholder="Номер телефона">
             <span class="errorSpan" v-if="v$.phoneNumber.$error">{{v$.phoneNumber.$errors[0].$message}}</span>
+            <input v-model.trim="password" class="input" type="text" placeholder="Пароль">
+            <span class="errorSpan" v-if="v$.password.$error">{{v$.password.$errors[0].$message}}</span>
             <button class="registerButton" type="button" @click="postUser">Зарегистрироваться</button>
         </form>
         <div v-if="posted">

@@ -82,13 +82,15 @@ namespace VueAPI.Server.DataModels
 		[Column,        Nullable] public string LastAddress   { get; set; } // character varying
 		[Column,     NotNull    ] public string PhoneNumber   { get; set; } // text
 		[Column,        Nullable] public int?   PromotionList { get; set; } // integer
+        [Column,		Nullable] public string PassHash { get; set; } // character varying
 
-		#region Associations
 
-		/// <summary>
-		/// CustomerID_FK_BackReference (FoodService.PromotionList)
-		/// </summary>
-		[Association(ThisKey="CustomerID", OtherKey="CustomerID", CanBeNull=true)]
+        #region Associations
+
+        /// <summary>
+        /// CustomerID_FK_BackReference (FoodService.PromotionList)
+        /// </summary>
+        [Association(ThisKey="CustomerID", OtherKey="CustomerID", CanBeNull=true)]
 		public IEnumerable<PromotionList> CustomerIDFkBackReferences { get; set; }
 
 		/// <summary>
@@ -448,6 +450,11 @@ namespace VueAPI.Server.DataModels
         {
             return table.FirstOrDefault(t =>
                 t.CustomerID == CustomerID);
+        }
+        public static Customer FindPassHash(this ITable<Customer> table, string email, string password)
+        {
+            return table.FirstOrDefault(t =>
+                t.Email == email && t.PassHash == Helpers.PassHasher.SHA256_hash(password));
         }
 
         public static DeliveryPoint Find(this ITable<DeliveryPoint> table, Guid DeliveryPointID)

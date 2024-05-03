@@ -11,7 +11,7 @@
         </ul>
     </header>
 </template>
-<script setup>
+<script>
 </script>
 <style>
 .auth-container {

@@ -2,6 +2,8 @@
 using LinqToDB;
 using Microsoft.AspNetCore.Mvc;
 using static LinqToDB.Reflection.Methods.LinqToDB;
+using System.Security.Cryptography;
+using System.Text;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -27,11 +29,19 @@ namespace VueAPI.Server.Controllers
             return _connection.Customers.Find(id);
         }
 
+        // POST api/<CustomerController>/pass
+        [HttpPost("pass")]
+        public Customer Get([FromBody] Customer dummyCustomer)
+        {
+            return _connection.Customers.FindPassHash(dummyCustomer.Email, dummyCustomer.PassHash);
+        }
+
         // POST api/<CustomerController>
-        [HttpPost]
+        [HttpPost]  
         public Customer Post([FromBody] Customer customer)
         {
             customer.CustomerID = Guid.NewGuid();
+            customer.PassHash = Helpers.PassHasher.SHA256_hash(customer.PassHash);
             _connection.Insert(customer);
 
             return _connection.Customers.Find(customer.CustomerID);

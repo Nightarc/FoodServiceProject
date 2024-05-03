@@ -3,12 +3,11 @@
     <div class="registerForm">
         <form class="form">
             <h2>Вход в учетную запись</h2>
-            <input 
-                v-model.trim="phoneNumber"
-                class="input" type="text"     
-                placeholder="Номер телефона">
-            <button class="loginButton" type="button" @click="postUser">Войти</button>
+            <input v-model.trim="email" class="input" type="text" placeholder="Электронная почта">
+            <input v-model.trim="password" class="input" type="text" placeholder="Пароль">
+            <button class="loginButton" type="button" @click="submitForm">Войти</button>
         </form>
+        <div v-if="loggedin">Вход произошел успешно!</div>
     </div>
 </template>
 
@@ -17,33 +16,35 @@ import MyHeader from '@/components/MyHeader.vue';
 import axios from 'axios';
 
 export default {
-    components : {
+    components: {
         MyHeader,
     },
     data() {
         return {
-            name: "",
-            address: "",
-            phoneNumber: "",
             email: "",
-            error:false,
-            postedId:"",
-            posted:false    
+            password: "",
+            address: "",
+            error: false,
+            postedId: "",
+            loggedin: false
         }
     },
     methods: {
-        postUser() {
-            const user = {name:this.name, lastAddress:this.address, phoneNumber:this.phoneNumber, email:this.email}
-            try{
-                axios.post("http://localhost:5174/api/Customer", user)
-                    .catch(() => this.error = true)
-                    .then(() => this.posted = true)
+        submitForm() {
+            const requestBody = {name:"dummy", email: this.email, phoneNumber: "+00000000000" , passHash : this.password } //! this will be required to change if structure of auth changes
+            try {
+                axios.post("http://localhost:5174/api/Customer/pass", requestBody)
+                    .then(response => response.data)
+                    .then(data => {this.address = data.address})
             }
-            catch(error) {
+            catch (error) {
                 this.error = true;
             }
             
-                
+            if(this.address != "") {
+                this.loggedin = true;
+            }
+
         }
     }
 }
