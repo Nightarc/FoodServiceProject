@@ -47,7 +47,7 @@ export default {
                     .catch(() => this.error = true)
                     .then(() => this.posted = true)
                     .then(alert("Регистрация прошла успешно!"))
-                    .then(this.$router.push('/'))
+                    .then(this.$router.push('/login'))
                 }
                 catch(error) {
                     alert("Что-то пошло не так") 

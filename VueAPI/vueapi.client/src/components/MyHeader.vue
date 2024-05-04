@@ -1,7 +1,7 @@
 <template>
     <header class="menu"> 
         <a class="main_link" href="/">Главная</a>
-        <ul class="auth-container">
+        <ul v-if="!this.$store.getters.getIsAuth" class="auth-container">
             <li class="login_box">
                 <a class="login_link" href="/login">Войти</a>
             </li>
@@ -9,9 +9,11 @@
                 <a class="register_link" href="/register">Зарегистрироваться</a>
             </li>
         </ul>
+        <div v-if="this.$store.getters.getIsAuth">Здравствуй, {{ this.$store.getters.getUser.name }}</div>
     </header>
 </template>
-<script>
+<script setup>
+
 </script>
 <style>
 .auth-container {

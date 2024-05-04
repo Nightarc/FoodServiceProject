@@ -1,6 +1,5 @@
 <template>
     <MyHeader />
-    
     <CardHolder />
 </template>
 

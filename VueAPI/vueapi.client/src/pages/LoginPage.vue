@@ -7,12 +7,13 @@
             <input v-model.trim="password" class="input" type="text" placeholder="Пароль">
             <button class="loginButton" type="button" @click="submitForm">Войти</button>
         </form>
-        <div v-if="loggedin">Вход произошел успешно!</div>
+        <div v-if="loginerror" class="error">Некорректная электронная почта или пароль.</div>
     </div>
 </template>
 
 <script>
 import MyHeader from '@/components/MyHeader.vue';
+import store from '@/store';
 import axios from 'axios';
 
 export default {
@@ -25,32 +26,38 @@ export default {
             password: "",
             address: "",
             error: false,
-            postedId: "",
-            loggedin: false
+            loginerror: false
         }
     },
     methods: {
+        confirmLogin() {
+            if(store.getters.getUser.lastAddress != "" && store.getters.getUser.lastAddress != undefined) {
+                store.commit("setIsAuth", true)
+                this.$router.push("/");
+            }
+            else {this.loginerror = true}
+        },
         submitForm() {
             const requestBody = {name:"dummy", email: this.email, phoneNumber: "+00000000000" , passHash : this.password } //! this will be required to change if structure of auth changes
             try {
                 axios.post("http://localhost:5174/api/Customer/pass", requestBody)
                     .then(response => response.data)
-                    .then(data => {this.address = data.address})
+                    .then(data => store.commit("setUser", data))
+                    .then(() => this.confirmLogin())
             }
             catch (error) {
                 this.error = true;
             }
             
-            if(this.address != "") {
-                this.loggedin = true;
-            }
-
         }
     }
 }
 </script>
 
 <style scoped>
+.error {
+    color:darkred;
+}
 .form {
     display: flex;
     flex-direction: column;
