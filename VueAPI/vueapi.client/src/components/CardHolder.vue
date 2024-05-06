@@ -1,7 +1,8 @@
 ﻿<template>   
     <div class="cardHolder">
-        <div class="foodItem" v-for="item in post" :key="item.title">
-            <FoodItem :title="item.foodName" :imagePath="item.imagePath" />
+        
+        <div class="foodItem" v-for="item in post" :key="item.foodName">
+            <FoodItem :foodInfo="item"/>
         </div>
     </div>
 
@@ -14,14 +15,16 @@ import { defineComponent } from 'vue';
 
 export default defineComponent({
     components: {
-        FoodItem
+        FoodItem,
     },
 
     data() {
         return {
             loading: false,
             post: null,
-            items: null
+            items: null,
+            isPopupOpen:false,
+            confirmation:""
         };
     },
     created() {
@@ -47,7 +50,9 @@ export default defineComponent({
                     this.loading = false;
                     return;
                 });
-        }
+        },
+
+        
     },
 });
 </script>

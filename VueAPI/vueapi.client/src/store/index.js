@@ -5,9 +5,13 @@ import Cookies from 'js-cookie'
 export default createStore( {
     state: {
         user: {},
+        cart: [],
         isAuth:false
     },
     getters: {
+        getCart(state) {
+            return state.cart
+        },
         getUser(state) {
             return state.user;
         },
@@ -19,9 +23,20 @@ export default createStore( {
         setUser(state, user) {
             state.user = user
         },
+
+        setCart(state, cart) {
+            state.cart = cart
+        },
+        addToCart(state, item) {
+            state.cart.push(item)
+        },
+        clearCart(state) {
+            state.cart = []; //?? idk about leaks here
+        },
+        
         setIsAuth(state, isAuth) {
             state.isAuth = isAuth
-        }
+        },
     },
     plugins: [createPersistedState({
         storage: {

@@ -1,6 +1,7 @@
 <template>
     <header class="menu"> 
         <a class="main_link" href="/">Главная</a>
+        <a class="cart_link" href="/cart">Корзина</a>
         <ul v-if="!this.$store.getters.getIsAuth" class="auth-container">
             <li class="login_box">
                 <a class="login_link" href="/login">Войти</a>
@@ -48,7 +49,13 @@
     border: 1px solid teal;
     background-color: teal;
     color:white;
-    margin-right:auto;
 }
 
+.cart_link {
+    border: 1px solid teal;
+    background-color: teal;
+    color:white;
+    margin-left: 5px;
+    margin-right:auto;
+}
 </style>
