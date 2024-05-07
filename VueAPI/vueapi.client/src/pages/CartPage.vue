@@ -7,6 +7,9 @@
         <div class="foodItem" v-for="item in cart" :key="item.foodName">
             <span>{{ item.foodName }}</span> <br>
             <span>{{ item.price }} Р</span> <br>
+            <button @click="addCount(item)">+1</button> <!-- steal icon from danar -->
+            <span>{{ item.count }}</span>
+            <button @click="subCount(item)">-1</button>
         </div>
     </div>
     <div class="checkoutContainer">
@@ -22,6 +25,7 @@ import MyButton from '@/components/MyButton.vue';
 import MyHeader from '@/components/MyHeader.vue';
 import axios from 'axios';
 import store from '@/store';
+import { integer } from '@vuelidate/validators';
 
 export default {
     components: {
@@ -33,14 +37,17 @@ export default {
             cart:[],
             error:false,
             success:false,
+            count:integer,
         }
     },
     created() {
         //DANGER: USER CAN EDIT LOCALSTORAGE, SECURITY ISSUE
         if(localStorage.getItem("cart") != null && localStorage.getItem("cart") != "")
-        this.cart = JSON.parse(localStorage.getItem("cart"))
-        console.log(this.cart)
-
+            this.cart = JSON.parse(localStorage.getItem("cart"))
+    },
+    updated() {
+        if(localStorage.getItem("cart") != null && localStorage.getItem("cart") != "")
+            localStorage.setItem("cart", JSON.stringify(this.cart))
     },
     computed: {
         emptyCart() {
@@ -56,6 +63,15 @@ export default {
         }
     },
     methods: {
+        //store cart on unload
+        addCount(foodItem) {
+            foodItem.count += 1; //these functions need to change values in store, not in local model
+        },
+        subCount(foodItem) {
+            if(foodItem.count > 1) 
+                foodItem.count -= 1;
+            //else ask permission to delete item from cart
+        },
         clearCart() {
             localStorage.setItem("cart", "")
             this.cart = [];
@@ -65,7 +81,6 @@ export default {
             this.clearCart();
         },
         createOrderDetails(orderBody) {
-            console.log(orderBody)
             this.cart.forEach(item => {
                     const orderDetailsRequestBody = {
                         FoodItem: item.foodID,

@@ -58,6 +58,8 @@ import FoodPopup from './FoodPopup.vue';
                     cart = JSON.parse(cart)
                 else 
                     cart = []
+                let foodItem = this.foodInfo
+                foodItem.count = 1
                 cart.push(this.foodInfo)
                 localStorage.setItem("cart", JSON.stringify(cart)) 
                 
