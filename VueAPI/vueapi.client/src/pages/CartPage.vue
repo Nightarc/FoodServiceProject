@@ -56,7 +56,7 @@ export default {
         priceSum() {
             if(!this.emptyCart) {
                 return this.cart
-                    .flatMap(item => item.price)
+                    .flatMap(item => item.price*item.count)
                     .reduce((accumulator, currentValue) => accumulator + currentValue)
                 }
             else return null;
