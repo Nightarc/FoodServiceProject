@@ -5,15 +5,16 @@
     <div class="errorMessage" v-if="error">Произошла ошибка!</div>
     <div class="foodItemList">
         <div class="foodItem" v-for="item in cart" :key="item.foodName">
+            <img :src="getImgUrl(item)" width="100" height="100" />
             <span>{{ item.foodName }}</span> <br>
             <span>{{ item.price }} Р</span> <br>
-            <button @click="subCount(item)">-1</button>
+            <button @click="subCount(item)">-</button>
             <span>{{ item.count }}</span>
-            <button @click="addCount(item)">+1</button> <!-- steal icon from danar -->
+            <button @click="addCount(item)">+</button> <!-- steal icon from danar -->
         </div>
     </div>
     <div class="checkoutContainer">
-        <div v-if="!this.emptyCart" class="priceCounter">{{ priceSum }} Р</div>
+        <div v-if="!this.emptyCart" class="priceCounter">Общая стоимость: {{ priceSum }} Р</div>
         <MyButton class="createOrder" @click="createOrder"> Оформить и оплатить заказ </MyButton>
     </div>
     <div v-if="this.emptyCart"> Корзина пуста!</div>
@@ -63,6 +64,9 @@ export default {
         }
     },
     methods: {
+        getImgUrl(foodInfo) {
+            return "src/" + foodInfo.imagePath;
+        },
         //store cart on unload
         addCount(foodItem) {
             foodItem.count += 1; //these functions need to change values in store, not in local model
@@ -161,6 +165,9 @@ export default {
 
 .foodItem {
     border:1px solid teal;
+    display:flex;
+    align-items: center;
+    gap:10px;
 }
 
 </style>
