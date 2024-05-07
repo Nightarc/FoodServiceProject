@@ -84,7 +84,7 @@ export default {
             this.cart.forEach(item => {
                     const orderDetailsRequestBody = {
                         FoodItem: item.foodID,
-                        Quantity: 1,
+                        Quantity: item.count,
                         OrderID: orderBody.orderID
                     }
                     axios.post("http://localhost:5174/api/OrderDetail", orderDetailsRequestBody)
@@ -96,7 +96,6 @@ export default {
                 address: store.getters.getUser.lastAddress, 
                 }
             try {
-                console.log(requestBody)
                 axios.post("http://localhost:5174/api/Order", requestBody)
                     .then(response => response.data)
                     .then(data => this.createOrderDetails(data))
