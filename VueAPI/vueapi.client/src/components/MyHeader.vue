@@ -2,7 +2,7 @@
     <header class="menu"> 
         <a class="main_link" href="/">Главная</a>
         <a class="cart_link" href="/cart">Корзина</a>
-        <ul v-if="!this.$store.getters.getIsAuth" class="auth-container">
+        <ul v-if="!$store.getters.getIsAuth" class="auth-container">
             <li class="login_box">
                 <a class="login_link" href="/login">Войти</a>
             </li>
@@ -10,10 +10,21 @@
                 <a class="register_link" href="/register">Зарегистрироваться</a>
             </li>
         </ul>
-        <div v-if="this.$store.getters.getIsAuth">Здравствуй, {{ this.$store.getters.getUser.name }}</div>
+        <div v-if="$store.getters.getIsAuth">Здравствуй, {{ $store.getters.getUser.name }}</div>
+        <div v-if="$store.getters.getIsAuth">
+            <MyButton @click="logout">Выйти</MyButton>
+        </div>
     </header>
 </template>
 <script setup>
+import store from '@/store';
+import MyButton from './MyButton.vue';
+const logout = () => {
+    store.commit("setUser", null);
+    store.commit("setIsAuth", false);
+    localStorage.removeItem("cart")
+    this.$router.push("/")
+}
 
 </script>
 <style>

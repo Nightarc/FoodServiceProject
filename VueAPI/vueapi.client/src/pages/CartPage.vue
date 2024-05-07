@@ -90,23 +90,25 @@ export default {
                     axios.post("http://localhost:5174/api/OrderDetail", orderDetailsRequestBody)
                 });
         },
-        createOrder() { //need to make sure if user exists
-            const requestBody = {
-                CustomerID: store.getters.getUser.customerID, 
-                address: store.getters.getUser.lastAddress, 
+        createOrder() { 
+            if(store.getters.getUser != null) {//need to make sure if user exists
+                const requestBody = {
+                    CustomerID: store.getters.getUser.customerID, 
+                    address: store.getters.getUser.lastAddress, 
+                    }
+                try {
+                    axios.post("http://localhost:5174/api/Order", requestBody)
+                        .then(response => response.data)
+                        .then(data => this.createOrderDetails(data))
+                        .then(() => this.confirmRequest())
+                    
+                    
                 }
-            try {
-                axios.post("http://localhost:5174/api/Order", requestBody)
-                    .then(response => response.data)
-                    .then(data => this.createOrderDetails(data))
-                    .then(() => this.confirmRequest())
-                
-                
+                catch (error) {
+                    this.error = true;
+                }
             }
-            catch (error) {
-                this.error = true;
-            }
-            //this.$router.push("/createOrder")
+            else this.$router.push("/login")
         }
     },
 }
