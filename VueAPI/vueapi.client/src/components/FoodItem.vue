@@ -27,25 +27,17 @@
 <script>
     import { defineComponent } from 'vue';
 import FoodPopup from './FoodPopup.vue';
-import store from '@/store';
-
     export default defineComponent({
         data() {
             return {
                 isPopupOpen:false,
-                tempCart:[]
-
             }
         },
         components : {
             FoodPopup
         },
-        emits: {
-
-        },
         props: {
             foodInfo: {},
-            cart:[],
         },
         methods:
         {
@@ -60,7 +52,15 @@ import store from '@/store';
 
             popupConfirmed() {
                 alert("Предмет добавлен в корзину!")
-                store.commit("addToCart", this.foodInfo.foodName)
+                let cart = localStorage.getItem("cart")
+                if(cart != null && cart != "") //javascript i hate you; why null autocasts to "null"? WTF?
+                    cart = JSON.parse(cart)
+                else 
+                    cart = []
+                cart.push(this.foodInfo)
+                localStorage.setItem("cart", JSON.stringify(cart)) 
+                
+
                 this.isPopupOpen = false;
             },
 
