@@ -31,6 +31,8 @@ namespace VueAPI.Server.Controllers
         public Order Post([FromBody] Order Order)
         {
             Order.OrderID = Guid.NewGuid();
+            Order.Time = DateTime.Now.ToUniversalTime();
+            Order.Date = DateTime.Now.Date;
             _connection.Insert(Order);
 
             return _connection.Orders.Find(Order.OrderID);

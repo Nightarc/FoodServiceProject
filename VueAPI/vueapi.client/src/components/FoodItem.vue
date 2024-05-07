@@ -39,6 +39,7 @@ import FoodPopup from './FoodPopup.vue';
         props: {
             foodInfo: {},
         },
+
         methods:
         {
             getImgUrl() {
