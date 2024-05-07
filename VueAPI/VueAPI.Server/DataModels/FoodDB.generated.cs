@@ -184,6 +184,12 @@ namespace VueAPI.Server.DataModels
 		[Association(ThisKey="PaymentID", OtherKey="PaymentID", CanBeNull=true)]
 		public Payment Payment { get; set; }
 
+		/// <summary>
+		/// PaymentID_FK_BackReference (FoodService.Payment)
+		/// </summary>
+		[Association(ThisKey="OrderID", OtherKey="OrderID", CanBeNull=true)]
+		public IEnumerable<OrderDetail> OrderPaymentIdfks { get; set; }
+
 		#endregion
 	}
 
@@ -221,6 +227,7 @@ namespace VueAPI.Server.DataModels
 	public partial class Payment
 	{
 		[PrimaryKey, NotNull] public Guid           PaymentID     { get; set; } // uuid
+		[Column,     NotNull] public Guid       	OrderID       { get; set; } // uuid
 		[Column,     NotNull] public decimal        NetPrice      { get; set; } // money
 		[Column,     NotNull] public decimal        PaymentAmount { get; set; } // money
 		[Column,     NotNull] public DateTimeOffset Time          { get; set; } // time with time zone
@@ -239,6 +246,12 @@ namespace VueAPI.Server.DataModels
 		/// </summary>
 		[Association(ThisKey="PaymentID", OtherKey="PaymentID", CanBeNull=true)]
 		public IEnumerable<Subscription> PaymentIdfks { get; set; }
+
+		/// <summary>
+		/// OrderID_Reference (FoodService.Order)
+		/// </summary>
+		[Association(ThisKey="OrderID", OtherKey="OrderID", CanBeNull=true)]
+		public Order Order { get; set; }
 
 		#endregion
 	}

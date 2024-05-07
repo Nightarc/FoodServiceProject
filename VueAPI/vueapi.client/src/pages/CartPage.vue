@@ -7,14 +7,14 @@
         <div class="foodItem" v-for="item in cart" :key="item.foodName">
             <span>{{ item.foodName }}</span> <br>
             <span>{{ item.price }} Р</span> <br>
-            <button @click="addCount(item)">+1</button> <!-- steal icon from danar -->
-            <span>{{ item.count }}</span>
             <button @click="subCount(item)">-1</button>
+            <span>{{ item.count }}</span>
+            <button @click="addCount(item)">+1</button> <!-- steal icon from danar -->
         </div>
     </div>
     <div class="checkoutContainer">
         <div v-if="!this.emptyCart" class="priceCounter">{{ priceSum }} Р</div>
-        <MyButton class="createOrder" @click="createOrder"> Оформить заказ </MyButton>
+        <MyButton class="createOrder" @click="createOrder"> Оформить и оплатить заказ </MyButton>
     </div>
     <div v-if="this.emptyCart"> Корзина пуста!</div>
     <MyButton class="clearButton" @click="clearCart">Очистить корзину</MyButton>
@@ -80,6 +80,40 @@ export default {
             this.success = true;
             this.clearCart();
         },
+        createPaymentUpdateOrder(orderBody) {
+            
+            const postRequestBody = {
+                        NetPrice: this.priceSum,  
+                        PaymentAmount: this.priceSum,
+                        OrderID: orderBody.orderID
+                    }
+                    axios.post("http://localhost:5174/api/Payment", postRequestBody)
+                        .then(response => response.data)
+                        .then(data => {
+                            const orderUpdateRequest = {
+                                OrderID: orderBody.OrderID,
+                                Address: orderBody.Address,
+                                PaymentID: data.paymentID,
+                                Time: orderBody.Time,
+                                Date: orderBody.Date,
+                                CustomerID: orderBody.CustomerID,
+                                DeliveryPointID: orderBody.DeliveryPointID
+                            }
+                            axios.put("http://localhost:5174/api/Order", orderUpdateRequest)
+                                .then(() => console.log("Оплата прошла успешно"))
+                        })
+            
+        },
+        createPayment(orderBody) {
+            console.log("PAYMENT")
+            console.log(orderBody)
+            const postRequestBody = {
+                        NetPrice: this.priceSum,  
+                        PaymentAmount: this.priceSum,
+                        OrderID: orderBody.orderID
+                    }
+                    axios.post("http://localhost:5174/api/Payment", postRequestBody)
+        },
         createOrderDetails(orderBody) {
             this.cart.forEach(item => {
                     const orderDetailsRequestBody = {
@@ -90,6 +124,10 @@ export default {
                     axios.post("http://localhost:5174/api/OrderDetail", orderDetailsRequestBody)
                 });
         },
+        fillOrder(orderBody) {
+            this.createOrderDetails(orderBody)
+            this.createPayment(orderBody)
+        },
         createOrder() { 
             if(store.getters.getUser != null) {//need to make sure if user exists
                 const requestBody = {
@@ -99,7 +137,7 @@ export default {
                 try {
                     axios.post("http://localhost:5174/api/Order", requestBody)
                         .then(response => response.data)
-                        .then(data => this.createOrderDetails(data))
+                        .then(data => this.fillOrder(data))
                         .then(() => this.confirmRequest())
                     
                     

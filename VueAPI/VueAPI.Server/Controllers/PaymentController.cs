@@ -31,6 +31,8 @@ namespace VueAPI.Server.Controllers
         public Payment Post([FromBody] Payment Payment)
         {
             Payment.PaymentID = Guid.NewGuid();
+            Payment.Time = DateTime.Now.ToUniversalTime();
+            Payment.Date = DateTime.Now.Date;
             _connection.Insert(Payment);
 
             return _connection.Payments.Find(Payment.PaymentID);
